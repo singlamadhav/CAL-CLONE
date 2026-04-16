@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  duration    Int
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  availability Availability[]
+  bookings     Booking[]
+}
+
+model Availability {
+  id        String @id @default(cuid())
+  eventId   String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  eventId   String
+  name      String
+  email     String
+  date      String
+  startTime String
+  endTime   String
+  cancelled Boolean  @default(false)
+  createdAt DateTime @default(now())
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
